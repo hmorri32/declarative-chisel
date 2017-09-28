@@ -16,6 +16,25 @@ def initialize(markdown)
   end
 
   def chunk_to_html(input)
+    if header?(input)
+      header_to_html(input)
+    else
+      paragraph_to_html(input)
+    end
+  end
+
+  def paragraph_to_html(input)
+    markdown_lines     = input.lines
+    indented_lines     = markdown_lines.map{|line| "  #{line.chomp}\n"}
+    indented_paragraph = indented_lines.join
+    "<p>\n#{indented_paragraph}</p>"
+  end
+
+  def header?(input)
+    input[0] == '#'
+  end
+
+  def header_to_html(input)
     # remove leading hashes and yung space
     first_char  = input.index(' ') + 1
     level       = first_char - 1
@@ -24,7 +43,6 @@ def initialize(markdown)
     
     # and den wrap it with yung tags 
     "<h#{level}>#{header_text}</h#{level}>"
-    
   end
 
 end

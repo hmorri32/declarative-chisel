@@ -32,7 +32,8 @@ class TestChisel < Minitest::Test
     assert_equal expected_chunks, actual_chunks
   end
 
-  def test_it_converts_chunk_hashes_to_html_tags
+  def test_it_converts_chunk_hashes_to_h_tags
+    skip
     input_chunk   = '# My Life in Desserts'
     actual_chunk  = Chisel.new('').chunk_to_html(input_chunk)
     expected_html = '<h1>My Life in Desserts</h1>'
@@ -42,11 +43,14 @@ class TestChisel < Minitest::Test
     input_chunk   = '## Chapter 1: The Beginning'
     actual_chunk  = Chisel.new('').chunk_to_html(input_chunk)
     expected_html = '<h2>Chapter 1: The Beginning</h2>'
-    
+
     assert_equal expected_html, actual_chunk
   end
 
   def test_it_converts_everything_else_into_p
-    skip
+    markdown_chunk = "line 1\nline 2"
+    html_chunk     = "<p>\n  line 1\n  line 2\n</p>"
+    actual_chunk   = Chisel.new('').chunk_to_html(markdown_chunk)
+    assert_equal html_chunk, actual_chunk
   end
 end
