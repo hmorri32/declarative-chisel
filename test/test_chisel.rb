@@ -12,7 +12,6 @@ class TestChisel < Minitest::Test
 "You just *have* to try the cheesecake," he said. "Ever since it appeared in
 **Food & Wine** this place has been packed every night."'
 
-    actual_html   = Chisel.new(markdown).to_html
     expected_html = '<h1>My Life in Desserts</h1>
 
 <h2>Chapter 1: The Beginning</h2>
@@ -22,37 +21,27 @@ class TestChisel < Minitest::Test
   <strong>Food &amp; Wine</strong> this place has been packed every night."
 </p>'
 
-    assert_equal expected_html, actual_html
+    assert_equal expected_html, Chisel.new(markdown).to_html
+  end
+
+  def string_to_chunks(chunk)
+    Chisel.new('').string_to_chunks(chunk)
+  end
+
+  def chunk_to_html(chunk)
+    Chisel.new('').chunk_to_html(chunk)
   end
 
   def test_it_delineates_chunk_by_blank_line
-
-    markdown = "a\nb\n\nc\n\n\nd"
-    actual_chunks = Chisel.new('').string_to_chunks(markdown)
-    expected_chunks = ["a\nb", 'c', 'd']
-    assert_equal expected_chunks, actual_chunks
+    assert_equal ["a\nb", 'c', 'd'], string_to_chunks("a\nb\n\nc\n\n\nd")
   end
 
   def test_it_converts_chunk_hashes_to_h_tags
-
-    input_chunk   = '# My Life in Desserts'
-    actual_chunk  = Chisel.new('').chunk_to_html(input_chunk)
-    expected_html = '<h1>My Life in Desserts</h1>'
-
-    assert_equal expected_html, actual_chunk
-
-    input_chunk   = '## Chapter 1: The Beginning'
-    actual_chunk  = Chisel.new('').chunk_to_html(input_chunk)
-    expected_html = '<h2>Chapter 1: The Beginning</h2>'
-
-    assert_equal expected_html, actual_chunk
+    assert_equal '<h1>My Life in Desserts</h1>',      chunk_to_html('# My Life in Desserts')
+    assert_equal '<h2>Chapter 1: The Beginning</h2>', chunk_to_html('## Chapter 1: The Beginning')
   end
 
   def test_it_converts_everything_else_into_p
-    
-    markdown_chunk = "line 1\nline 2"
-    html_chunk     = "<p>\n  line 1\n  line 2\n</p>"
-    actual_chunk   = Chisel.new('').chunk_to_html(markdown_chunk)
-    assert_equal html_chunk, actual_chunk
+    assert_equal "<p>\n  line 1\n  line 2\n</p>", chunk_to_html("line 1\nline 2")
   end
 end
