@@ -4,29 +4,26 @@ def initialize(markdown)
   end
 
   def to_html
-    markdown_chunks = string_to_chunks(@markdown)
-    html_chunks     = markdown_chunks.map do |chunk| 
-      chunk_to_html(chunk)
-    end
-    chunks_to_string html_chunks
+    html_chunks = string_to_chunks(@markdown).map {|chunk| chunk_to_html(chunk)}
+    chunks_to_string(html_chunks)
   end
 
+  def chunks_to_string(chunk)
+    chunk.join("\n\n") 
+  end
+  
   def string_to_chunks(string)
     string.split(/\n\n+/)
   end
 
   def chunk_to_html(input)
-    if header?(input)
-      header_to_html(input)
-    else
-      paragraph_to_html(input)
-    end
+    return header_to_html(input) if header?(input)
+    paragraph_to_html(input)
   end
 
   def paragraph_to_html(input)
-    markdown_lines     = input.lines
-    indented_lines     = markdown_lines.map{|line| "  #{line.chomp}\n"}
-    indented_paragraph = indented_lines.join
+    markdown_lines     = text_to_html(input).lines
+    indented_paragraph = markdown_lines.map{|line| "  #{line.chomp}\n"}.join
     "<p>\n#{indented_paragraph}</p>"
   end
 
@@ -34,22 +31,25 @@ def initialize(markdown)
     input[0] == '#'
   end
 
+  def text_to_html(text)
+    text.gsub("**").with_index { |_, index| "<#{'/' if index.odd?}strong>" }
+        .gsub("*").with_index  { |_, index| "<#{'/' if index.odd?}em>" }
+        .gsub("&", "&amp;")
+  end
+
   def header_to_html(input)
-    # remove leading hashes and yung space
     first_char  = input.index(' ') + 1
     level       = first_char - 1
-    last_char   = -1
-    header_text = input[first_char..last_char]
-    
-    # and den wrap it with yung tags 
+    header_text = input[first_char..-1]
+
     "<h#{level}>#{header_text}</h#{level}>"
   end
 
 end
 
-im_running_the_program = ($PROGRAM_NAME == __FILE__)
+running = ($PROGRAM_NAME == __FILE__)
 
-if im_running_the_program
+if running
   markdown_file = ARGV[0]
   html_file     = ARGV[1]
   markdown      = File.read(markdown_file)
