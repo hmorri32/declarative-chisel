@@ -17,15 +17,14 @@ class Chisel
   end
 
   def chunk_to_html(chunk)
-    return header_to_html(chunk)    if header?(chunk)
-    return u_list_to_html(chunk)    if u_list?(chunk)
-    return o_list_to_html(chunk)    if o_list?(chunk)
-    return paragraph_to_html(chunk) if paragraph?(chunk)
+    return header_to_html    chunk if header?(chunk)
+    return u_list_to_html    chunk if u_list?(chunk)
+    return o_list_to_html    chunk if o_list?(chunk)
+    return paragraph_to_html chunk if paragraph?(chunk)
   end
 
   def paragraph_to_html(input)
     markdown_lines     = format_paragraph(input).lines
-
     indented_paragraph = markdown_lines.map{|line| "  #{line.chomp}\n"}.join
     "<p>\n#{indented_paragraph}</p>"
   end
@@ -41,12 +40,13 @@ class Chisel
   end
 
   def o_list_to_html(chunk)
-    mapped = chunk.lines.map do |item| 
+    li_tags = chunk.lines.map { |item| 
       item.gsub!("#{item.split.first} ", "  <li>")
           .split("\n")
-          .map{|item| "#{item}</li>"}
-    end.join("\n")
-    "<ol>\n#{mapped}\n</ol>"
+          .map{|item| "#{item}</li>"}}
+          .join("\n")
+
+    "<ol>\n#{li_tags}\n</ol>"
   end
 
   def header?(input)
@@ -67,7 +67,7 @@ class Chisel
 
   def format_paragraph(text)
     text.gsub("**").with_index { |_, index| "<#{'/' if index.odd?}strong>" }
-        .gsub("*").with_index  { |_, index| "<#{'/' if index.odd?}em>" }
+        .gsub("*") .with_index { |_, index| "<#{'/' if index.odd?}em>" }
         .gsub("&", "&amp;")
   end
 
@@ -80,7 +80,6 @@ class Chisel
   end
 
 end
-
 
 if $PROGRAM_NAME == __FILE__
   markdown_file  = ARGV[0]
