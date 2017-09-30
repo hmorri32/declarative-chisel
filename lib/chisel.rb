@@ -17,21 +17,44 @@ def initialize(markdown)
   end
 
   def chunk_to_html(input)
-    return header_to_html(input) if header?(input)
+    return header_to_html(input)    if header?(input)
     paragraph_to_html(input)
+    # list_to_html(input)
   end
 
   def paragraph_to_html(input)
-    markdown_lines     = text_to_html(input).lines
+    markdown_lines     = format_paragraph(input).lines
     indented_paragraph = markdown_lines.map{|line| "  #{line.chomp}\n"}.join
     "<p>\n#{indented_paragraph}</p>"
+  end
+
+  def list_to_html(text)
+    li_tags = text.gsub!("* ", '  <li>')
+                  .split("\n")
+                  .reject {|item| !item.start_with?("  <li>")}
+                  .map{|item| "#{item}</li>"}
+                  .join("\n")
+
+    p_tags  = text.split("\n")
+                  .reject {|item| item.start_with?("  <li>")}.join
+
+      "<ul>\n#{li_tags}\n</ul>"
+    end
   end
 
   def header?(input)
     input[0] == '#'
   end
 
-  def text_to_html(text)
+  def paragraph?(input)
+    input[0] != '#' && input[0] != "*"
+  end
+
+  def list?(input)
+    input[0..1] == "* "
+  end
+
+  def format_paragraph(text)
     text.gsub("**").with_index { |_, index| "<#{'/' if index.odd?}strong>" }
         .gsub("*").with_index  { |_, index| "<#{'/' if index.odd?}em>" }
         .gsub("&", "&amp;")
