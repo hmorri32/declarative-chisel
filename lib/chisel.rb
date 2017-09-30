@@ -20,6 +20,7 @@ class Chisel
     return header_to_html    chunk if header?(chunk)
     return u_list_to_html    chunk if u_list?(chunk)
     return o_list_to_html    chunk if o_list?(chunk)
+    return link_to_html      chunk if link?(chunk)
     return paragraph_to_html chunk if paragraph?(chunk)
   end
 
@@ -49,6 +50,15 @@ class Chisel
     "<ol>\n#{li_tags}\n</ol>"
   end
 
+  def link_to_html(chunk)
+    text = chunk[/\[.*?\]/].gsub('[', '')
+                           .gsub(']', '')
+    href = chunk.match(/\((\w|\W)+\)/)[0]
+                  .gsub('(', '')
+                  .gsub(')', '')
+    "<a href='#{href}'>#{text}</a>"
+  end
+
   def header?(input)
     input[0] == '#'
   end
@@ -63,6 +73,10 @@ class Chisel
 
   def o_list?(chunk)
     chunk.split("").first.to_i != 0
+  end
+
+  def link?(chunk)
+    chunk.start_with?("[")
   end
 
   def format_paragraph(text)

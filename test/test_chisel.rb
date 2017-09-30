@@ -100,4 +100,12 @@ class TestChisel < Minitest::Test
 
   assert_equal expected_html, Chisel.new(markdown).to_html
   end
+
+  def test_it_converts_links
+    markdown      = "[cool link](www.coollink.com)"
+    expected_html = "<a href='www.coollink.com'>cool link</a>"
+
+    assert_equal expected_html, Chisel.new(markdown).to_html
+
+  end
 end
