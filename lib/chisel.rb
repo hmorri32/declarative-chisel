@@ -16,10 +16,11 @@ class Chisel
     string.split(/\n\n+/)
   end
 
-  def chunk_to_html(input)
-    return header_to_html(input)    if header?(input)
-    return list_to_html(input)      if list?(input)
-    return paragraph_to_html(input) if paragraph?(input)
+  def chunk_to_html(chunk)
+    return header_to_html(chunk)    if header?(chunk)
+    return u_list_to_html(chunk)    if u_list?(chunk)
+    return o_list_to_html(chunk)    if o_list?(chunk)
+    return paragraph_to_html(chunk) if paragraph?(chunk)
   end
 
   def paragraph_to_html(input)
@@ -29,7 +30,7 @@ class Chisel
     "<p>\n#{indented_paragraph}</p>"
   end
 
-  def list_to_html(text)
+  def u_list_to_html(text)
     li_tags = text.gsub!("* ", '  <li>')
                   .split("\n")
                   .reject {|item| !item.start_with?("  <li>")}
@@ -37,6 +38,15 @@ class Chisel
                   .join("\n")
 
     "<ul>\n#{li_tags}\n</ul>"
+  end
+
+  def o_list_to_html(chunk)
+    mapped = chunk.lines.map do |item| 
+      item.gsub!("#{item.split.first} ", "  <li>")
+          .split("\n")
+          .map{|item| "#{item}</li>"}
+    end.join("\n")
+    "<ol>\n#{mapped}\n</ol>"
   end
 
   def header?(input)
@@ -47,8 +57,12 @@ class Chisel
     input[0] != '#' && input[0] != "*"
   end
 
-  def list?(input)
+  def u_list?(input)
     input[0..1] == "* "
+  end
+
+  def o_list?(chunk)
+    chunk.split("").first.to_i != 0
   end
 
   def format_paragraph(text)
