@@ -1,5 +1,5 @@
 class Chisel
-def initialize(markdown)
+  def initialize(markdown)
     @markdown = markdown
   end
 
@@ -18,12 +18,13 @@ def initialize(markdown)
 
   def chunk_to_html(input)
     return header_to_html(input)    if header?(input)
-    paragraph_to_html(input)
-    # list_to_html(input)
+    return list_to_html(input)      if list?(input)
+    return paragraph_to_html(input) if paragraph?(input)
   end
 
   def paragraph_to_html(input)
     markdown_lines     = format_paragraph(input).lines
+
     indented_paragraph = markdown_lines.map{|line| "  #{line.chomp}\n"}.join
     "<p>\n#{indented_paragraph}</p>"
   end
@@ -35,11 +36,7 @@ def initialize(markdown)
                   .map{|item| "#{item}</li>"}
                   .join("\n")
 
-    p_tags  = text.split("\n")
-                  .reject {|item| item.start_with?("  <li>")}.join
-
-      "<ul>\n#{li_tags}\n</ul>"
-    end
+    "<ul>\n#{li_tags}\n</ul>"
   end
 
   def header?(input)

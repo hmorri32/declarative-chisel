@@ -4,7 +4,7 @@ require './lib/chisel'
 
 class TestChisel < Minitest::Test
   def test_it_converts_markdown_to_html
-    
+
     markdown = '# My Life in Desserts
 
 ## Chapter 1: The Beginning
@@ -38,7 +38,7 @@ class TestChisel < Minitest::Test
   end
 
   def test_it_converts_chunk_hashes_to_h_tags
-    
+
     assert_equal '<h1>My Life in Desserts</h1>',      chunk_to_html('# My Life in Desserts')
     assert_equal '<h2>Chapter 1: The Beginning</h2>', chunk_to_html('## Chapter 1: The Beginning')
   end
@@ -50,18 +50,23 @@ class TestChisel < Minitest::Test
 
   def test_it_handles_lists
 
-    markdown = '* Sushi
+    markdown = 'My favorite cuisines are:
+
+* Sushi
 * Barbeque
 * Mexican'
 
-    expected_html = 
-'<ul>
+    expected_html = '<p>
+  My favorite cuisines are:
+</p>
+
+<ul>
   <li>Sushi</li>
   <li>Barbeque</li>
   <li>Mexican</li>
 </ul>'
 
-    assert_equal expected_html, chunk_to_html(markdown)
+    assert_equal expected_html, Chisel.new(markdown).to_html
 
   end
 
@@ -81,7 +86,7 @@ class TestChisel < Minitest::Test
   <li>sup</li>
 </ul>'
 
-  actual_html = chunk_to_html(markdown)
+  actual_html = Chisel.new(markdown).to_html
 
   assert_equal expected_html, actual_html
   end
