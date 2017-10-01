@@ -2,4 +2,4 @@
 Ultra chill MD --> HTML parser
 
 
-Code along `https://vimeo.com/131588133`
+Code along [The declarative paradigm](https://vimeo.com/131588133)
